@@ -17,7 +17,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, preprocessor):
     """
     print("\nModèle = gradient boosting")
 
-    # Appliquer le preprocessing sur les données
+    # Appliquer le preprocessing
     X_train_processed = preprocessor.fit_transform(X_train)
     X_test_processed = preprocessor.transform(X_test)
 
@@ -26,9 +26,8 @@ def gradient_boosting(X_train, X_test, y_train, y_test, preprocessor):
     print(X_train_processed[:5, :5])
     print("\n\nItérations d'entrainement")
 
-    # Création du modèle
-    # Initialisation du modèle
-    # Les hyperparamètres sont issus de la XValidation
+    # Création et initialisation du modèle
+    # Les hyperparamètres sont issus de recherche par RandomizedSearchCV
     # faite grâce à gb_cross_validation.py :
     # {'learning_rate': 0.2, 'max_depth': 3, 'min_samples_split': 2, 'n_estimators': 253}
     model = GradientBoostingClassifier(
@@ -36,7 +35,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, preprocessor):
         learning_rate=0.2,  # Taux d'apprentissage
         max_depth=3,  # Profondeur max des arbres
         min_samples_split=2,  # Nb min d'échantillons pour diviser un nœud
-        random_state=42,  # Graine aléatoire pour la reproductibilité
+        random_state=42,  # Reproductibilité
         verbose=1,
     )
 

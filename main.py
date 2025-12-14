@@ -31,7 +31,7 @@ def main():
 
         # Modèle 4 - 🏆 Gradient Boosting ( ≈ 0.9406 au premier tour sans optimisation)
         # Etant donnée le résultat de ce dernier modèle,
-        # voyons s'il est améliorable par GridSearchCV.
+        # voyons s'il est améliorable par RandomizedSearchCV.
         # gb_optimisation (X_train, X_test, y_train, y_test, preprocessor)
         # hyperparamètres optimaux :
         # {'learning_rate': 0.2, 'max_depth': 3, 'min_samples_split': 2, 'n_estimators': 253}

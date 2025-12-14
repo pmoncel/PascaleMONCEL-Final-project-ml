@@ -9,7 +9,7 @@ def decision_tree(X_train, X_test, y_train, y_test, preprocessor):
     """
     print("\nModèle = arbre de décision")
 
-    # Appliquer le preprocessing sur les données
+    # Appliquer le preprocessing
     X_train_processed = preprocessor.fit_transform(X_train)
     X_test_processed = preprocessor.transform(X_test)
 

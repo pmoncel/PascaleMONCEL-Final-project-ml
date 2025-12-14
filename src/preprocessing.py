@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-# preprocessing.py
-# Prétraite les données pour le modèle ML
-
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -13,32 +9,31 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 def preprocess_data(data):
     """
-    Prétraite les données pour l'entraînement d'un modèle de classification de priorité.
-    Split des données et création d'un pipeline de preprocessing.
+    Prétraite les données pour l'entraînement.
+    Split des données et création du pipeline de preprocessing.
 
-    Transformations appliquées :
+    Transformations effectuées :
     - Suppression des colonnes catégorielles encodées et identifiant du ticket
     - Encodage de la variable cible 'priority' (low=0, medium=1, high=2)
     - Imputation des valeurs manquantes de 'customer_sentiment' par 'neutral'
     - Split train/test (80/20)
     - Création d'un pipeline de preprocessing :
-        * Variables numériques : imputation (médiane) + standardisation
-        * Variables catégorielles : imputation (mode) + one-hot encoding
+      Variables numériques : imputation (médiane) + standardisation
+      Variables catégorielles : imputation (mode(=most_frequent)) + one-hot encoding
 
     Parameters
     ----------
-    data : pandas.DataFrame
-        DataFrame contenant les données brutes avec toutes les colonnes
-        (incluant 'priority' comme variable cible)
+    data : pandas.DataFrame des données brutes avec toutes les colonnes
+           (y compris 'priority')
 
     Returns
     -------
     tuple
         (X_train, X_test, y_train, y_test, preprocessor)
-        - X_train : DataFrame des features d'entraînement (non transformées)
+        - X_train : DataFrame des features de train (non transformées)
         - X_test : DataFrame des features de test (non transformées)
-        - y_train : Series des labels d'entraînement (encodés 0, 1, 2)
-        - y_test : Series des labels de test (encodés 0, 1, 2)
+        - y_train : les labels de train (encodés 0, 1, 2)
+        - y_test : les labels de test (encodés 0, 1, 2)
         - preprocessor : ColumnTransformer (non fitté) pour transformer X_train/X_test
 
     Example
@@ -51,7 +46,7 @@ def preprocess_data(data):
 
     # Copie du dataframe pour ne pas modifier l'original
     data = data.copy()
-    # Suppression des colonnes inutiles (cf 01-eda.ipynb)
+    # Supp. les colonnes inutiles (cf 01-eda.ipynb)
     data = data.drop(
         columns=[
             "ticket_id",
@@ -77,7 +72,7 @@ def preprocess_data(data):
     """
     # On pourra noter qu'avec un équilibrage des classes,
     # le resultat obtenu sera le même pour le modèle gagnant.
-    # Test avec équilibrage des classes
+    #### Test avec équilibrage des classes ####
     # Nombre minimum de tickets par priority
     min_count = data['priority'].value_counts().min()
     # Créer un dataset équilibré
@@ -121,6 +116,7 @@ def preprocess_data(data):
         ]
     )
     # Pipeline pour les variables catégorielles : imputation + encodage one-hot
+    # (handle_unknown => si un nouveau secteur apparait en PROD ça ne plantera pas)
     categorical_transformer = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="most_frequent")),
