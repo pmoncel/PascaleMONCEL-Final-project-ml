@@ -12,7 +12,11 @@ def main():
         data = load_data()
         print("Données originales chargées :")
         print(data.head())
-        X_train, X_test, y_train, y_test, preprocessor = preprocess_data(data)
+
+        # FEATURE ENGINEERING : Activer/Désactiver
+        # Passez feature_engineering=True ou False (défaut car pas d'amélioration)
+        X_train, X_test, y_train, y_test, preprocessor = preprocess_data(data, feature_engineering=False)
+
         print("\nDonnées prétraitées :")
         print(f"X_train: {X_train.shape}, X_test: {X_test.shape}")
         print(f"y_train: {y_train.shape}, y_test: {y_test.shape}")

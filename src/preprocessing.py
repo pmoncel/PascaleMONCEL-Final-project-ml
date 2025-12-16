@@ -6,13 +6,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+from src.feature_engineering import apply_feature_engineering
 
-def preprocess_data(data):
+
+def preprocess_data(data, feature_engineering=False):
     """
     Prétraite les données pour l'entraînement.
     Split des données et création du pipeline de preprocessing.
 
     Transformations effectuées :
+    - (Optionnel) Feature Engineering si feature_engineering=True
     - Suppression des colonnes catégorielles encodées et identifiant du ticket
     - Encodage de la variable cible 'priority' (low=0, medium=1, high=2)
     - Imputation des valeurs manquantes de 'customer_sentiment' par 'neutral'
@@ -23,8 +26,9 @@ def preprocess_data(data):
 
     Parameters
     ----------
-    data : pandas.DataFrame des données brutes avec toutes les colonnes
-           (y compris 'priority')
+    data : pandas.DataFrame
+        DataFrame des données brutes avec toutes les colonnes (y compris 'priority')
+    feature_engineering : bool, optional
 
     Returns
     -------
@@ -46,6 +50,11 @@ def preprocess_data(data):
 
     # Copie du dataframe pour ne pas modifier l'original
     data = data.copy()
+
+    # Feature Engineering (optionnel)
+    if feature_engineering:
+        data = apply_feature_engineering(data)
+
     # Supp. les colonnes inutiles (cf 01-eda.ipynb)
     data = data.drop(
         columns=[
