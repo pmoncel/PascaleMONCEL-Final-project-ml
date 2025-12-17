@@ -1,6 +1,7 @@
 from scipy.stats import randint
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.pipeline import Pipeline
 
 
 def gb_optimisation(X_train, X_test, y_train, y_test, preprocessor):
@@ -11,24 +12,24 @@ def gb_optimisation(X_train, X_test, y_train, y_test, preprocessor):
     """
     print("\nOptimisation des hyperparamètres")
 
-    # Appliquer le preprocessing
-    X_train_processed = preprocessor.fit_transform(X_train)
+     # Créer un Pipeline (preprocessor + modèle)
+    pipeline = Pipeline([
+        ('preprocessor', preprocessor),
+        ('model', GradientBoostingClassifier(random_state=42))
+    ])
 
-    # Création et initialisation du modèle
-    model = GradientBoostingClassifier(random_state=42)
-
-    # Grille des paramètres aléatoires (best practices)
+    # Préfixer les paramètres avec 'model__'
+    # Car ils sont maintenant dans le pipeline
     param_dist = {
-        "n_estimators": randint(50, 300),
-        "learning_rate": [0.01, 0.05, 0.1, 0.2],
-        "max_depth": randint(3, 6),
-        "min_samples_split": randint(2, 10),
+        "model__n_estimators": randint(50, 300),
+        "model__learning_rate": [0.01, 0.05, 0.1, 0.2],
+        "model__max_depth": randint(3, 6),
+        "model__min_samples_split": randint(2, 10),
     }
 
-    # Recherche aléatoire : 
-    # 10 itérations sur une validation croisée à 3 sous-ensembles = 30
+    # Passer le pipeline (pas le modèle seul)
     random_search = RandomizedSearchCV(
-        estimator=model,
+        estimator=pipeline,
         param_distributions=param_dist,
         n_iter=10,
         cv=3,
@@ -38,15 +39,16 @@ def gb_optimisation(X_train, X_test, y_train, y_test, preprocessor):
         verbose=2,
     )
 
-    # Entrainement du modèle
-    random_search.fit(X_train_processed, y_train)
+    # Fitter sur X_train NON transformé
+    # Le pipeline va s'occuper du preprocessing
+    random_search.fit(X_train, y_train)
 
-    # Evaluation
     # Afficher les résultats
     print("-----------------------------")
     print("Meilleurs paramètres:", random_search.best_params_)
     print("Meilleur score:", random_search.best_score_)
-    best_model = random_search.best_estimator_
-    print(best_model)
+    best_pipeline = random_search.best_estimator_
+    print(best_pipeline)
     print("-----------------------------")
-    return model
+    
+    return best_pipeline
